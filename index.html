@@ -118,6 +118,32 @@ dialog img{display:block;max-width:100%;max-height:75vh}
 footer{text-align:center;color:#fff;font-size:12px;padding:10px 0 30px}
 
 @media(prefers-reduced-motion:reduce){.screen .flash.go{animation:none}html{scroll-behavior:auto}}
+
+/* ---------- cd player ---------- */
+#cd{position:fixed;left:16px;bottom:16px;width:350px;max-width:calc(100vw - 32px);z-index:40;background:#cfc8cd;color:#2a2228;font:12px/1.3 var(--body);
+  border:2px solid;border-color:#fff #6b6068 #6b6068 #fff;box-shadow:5px 5px 0 var(--berry)}
+#cd[hidden]{display:none}
+#cd .bar{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:3px 3px 3px 8px;color:#fff;font:bold 13px var(--body);cursor:move;user-select:none;touch-action:none;background:linear-gradient(90deg,#ff3fa4,#ffa6d6)}
+.cd-btn{font:bold 12px var(--body);color:#2a2228;background:#cfc8cd;border:2px solid;border-color:#fff #6b6068 #6b6068 #fff;cursor:pointer;padding:2px 8px;line-height:1.1}
+.cd-btn:active{border-color:#6b6068 #fff #fff #6b6068}
+#cd .bar .cd-btn{padding:0 5px;min-width:18px;height:16px}
+#cd .body{padding:8px}
+#cd.min .body{display:none}
+.cd-main{display:flex;gap:8px}
+.cd-cover{width:86px;height:86px;flex:none;object-fit:cover;background:var(--candy);border:2px solid;border-color:#6b6068 #fff #fff #6b6068}
+.cd-fields{flex:1;min-width:0}
+.cd-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.cd-row>span{width:46px;font-weight:bold}
+.cd-field{flex:1;min-width:0;height:28px;padding:4px 6px;background:#fff;color:#2a2228;font:bold 13px var(--body);border:2px solid;border-color:#6b6068 #fff #fff #6b6068;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+select.cd-field{padding:0 2px}
+#cdSeek{width:100%;margin:8px 0 4px;accent-color:#ff3fa4}
+.cd-btns{display:flex;justify-content:space-between;gap:4px;margin-bottom:8px}
+.cd-btns .cd-btn{flex:1;padding:4px 0}
+.cd-btns .cd-btn[aria-pressed="true"]{border-color:#6b6068 #fff #fff #6b6068;color:var(--hot)}
+#cdSlot,#cd iframe{display:block;width:100%;border:0}
+.cd-note{margin:6px 0 0;font-size:11px;opacity:.85}
+#cdOpen{position:fixed;left:16px;bottom:16px;z-index:40}
+@media(prefers-reduced-motion:reduce){#cdSeek{transition:none}}
 </style>
 </head>
 <body>
@@ -143,8 +169,8 @@ footer{text-align:center;color:#fff;font-size:12px;padding:10px 0 30px}
    (A anon key é pública por design; quem protege os dados são as
    regras RLS criadas pelo supabase/setup.sql.)
    ========================================================= */
-const SUPABASE_URL = 'https://mjjrzwpbkitceccorxua.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qanJ6d3Bia2l0Y2VjY29yeHVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODE0MzMsImV4cCI6MjEwNjQ1NzQzM30.Mf_D5G1fmXw9BDx2WXuiIGoZYUcWvBC1BafLe_gKXe8';
+const SUPABASE_URL = 'COLE_AQUI_A_URL';
+const SUPABASE_ANON_KEY = 'COLE_AQUI_A_ANON_KEY';
 
 const sb = SUPABASE_URL.startsWith('COLE') ? null : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const BUCKET = 'fotos';
@@ -616,6 +642,154 @@ async function route(){
 }
 window.addEventListener('hashchange', route);
 route();
+</script>
+
+<script>
+/* =========================================================
+   CD PLAYER (Spotify)
+   Para adicionar músicas: no Spotify, clique nos três pontinhos da
+   música → Compartilhar → Copiar link da música, e cole em "link" abaixo.
+   "artist", "title" e "cover" são opcionais (se faltar, o player tenta
+   buscar o título e a capa sozinho).
+   ========================================================= */
+const TRACKS = [
+  { artist: 'Dido', title: 'Thank You', link: 'https://open.spotify.com/track/3yUcJwYu7fXAfqMj9krY6l',
+    cover: 'https://i.scdn.co/image/ab67616d0000b2733e5cbf3b3ac5905cb68377d5' },
+  { artist: 'The Cranberries', title: 'Zombie', link: 'https://open.spotify.com/track/3gjHnylel3PTRpjS44ocqr',
+    cover: 'https://i.scdn.co/image/ab67616d0000b27320a28883cdd0fc7d5f85a9a9' },
+  { artist: 'Sade', title: 'Smooth Operator', link: 'https://open.spotify.com/track/1Hv1VTm8zeOeybub15mA2R',
+    cover: 'https://i.scdn.co/image/ab67616d0000b2735e25e034e25258b356774c79' },
+  { artist: 'Gloria Gaynor', title: 'I Will Survive', link: 'https://open.spotify.com/track/7rIovIsXE6kMn629b7kDig',
+    cover: 'https://i.scdn.co/image/ab67616d0000b2732a1049b6d0d2b4c3c0abe7a8' },
+  { artist: 'Bee Gees', title: "Stayin' Alive", link: 'https://open.spotify.com/track/4UDmDIqJIbrW0hMBQMFOsM',
+    cover: 'https://i.scdn.co/image/ab67616d0000b27355fb38fda5321a8923911ff9' },
+  { artist: 'The Cardigans', title: 'Lovefool', link: 'https://open.spotify.com/track/7aQjPecQdIuNd1sz3KCDhD',
+    cover: 'https://i.scdn.co/image/ab67616d0000b2730aac8ca880151fda470e91af' },
+];
+
+(function cdPlayer(){
+  const toUri = v => {
+    v = String(v || ''); if(v.startsWith('spotify:')) return v;
+    const m = v.match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|episode)\/([A-Za-z0-9]+)/);
+    return m ? `spotify:${m[1]}:${m[2]}` : null;
+  };
+  const tracks = TRACKS.map(t => ({ ...t, uri: toUri(t.link || t.uri) })).filter(t => t.uri);
+
+  const root = document.createElement('div');
+  root.id = 'cd'; root.setAttribute('role', 'region'); root.setAttribute('aria-label', 'CD Player');
+  root.innerHTML = `
+    <div class="bar" id="cdBar"><span>💿 CD Player</span><span><button class="cd-btn" id="cdMin" aria-label="minimizar">_</button> <button class="cd-btn" id="cdClose" aria-label="fechar">✕</button></span></div>
+    <div class="body">
+      <div class="cd-main">
+        <img class="cd-cover" id="cdCover" alt="">
+        <div class="cd-fields">
+          <div class="cd-row"><span>Artista:</span><div class="cd-field" id="cdArtist">—</div></div>
+          <div class="cd-row"><span>Faixa:</span><select class="cd-field" id="cdTrack" aria-label="escolher faixa"></select></div>
+        </div>
+      </div>
+      <input type="range" id="cdSeek" min="0" max="100" value="0" step="1" aria-label="progresso da música">
+      <div class="cd-btns">
+        <button class="cd-btn" id="cdPrev" aria-label="anterior">◀◀</button>
+        <button class="cd-btn" id="cdNext" aria-label="próxima">▶▶</button>
+        <button class="cd-btn" id="cdPlay" aria-label="tocar ou pausar">▶</button>
+        <button class="cd-btn" id="cdStop" aria-label="parar">■</button>
+        <button class="cd-btn" id="cdShuf" aria-label="ordem aleatória" aria-pressed="false">●</button>
+      </div>
+      <div id="cdEmbed"><div id="cdSlot"></div></div>
+      <p class="cd-note" id="cdNote">dica: entre no Spotify pelo player acima pra ouvir a música inteira.</p>
+    </div>`;
+  document.body.append(root);
+
+  const reopen = document.createElement('button');
+  reopen.id = 'cdOpen'; reopen.className = 'cd-btn'; reopen.textContent = '💿 cd player'; reopen.hidden = true;
+  document.body.append(reopen);
+
+  const q = id => root.querySelector('#' + id);
+  const artist = q('cdArtist'), sel = q('cdTrack'), cover = q('cdCover'), seek = q('cdSeek'), playBtn = q('cdPlay');
+  if(innerWidth < 600) root.classList.add('min');
+
+  /* janela: minimizar, fechar, arrastar */
+  q('cdMin').onclick = () => root.classList.toggle('min');
+  q('cdClose').onclick = () => { root.hidden = true; reopen.hidden = false };
+  reopen.onclick = () => { root.hidden = false; reopen.hidden = true };
+  const bar = q('cdBar');
+  bar.addEventListener('pointerdown', e => {
+    if(e.target.closest('button')) return;
+    e.preventDefault(); bar.setPointerCapture(e.pointerId);
+    const r = root.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+    const move = ev => {
+      root.style.left = Math.min(Math.max(0, ev.clientX - dx), innerWidth - r.width) + 'px';
+      root.style.top = Math.min(Math.max(0, ev.clientY - dy), innerHeight - 30) + 'px';
+      root.style.bottom = 'auto';
+    };
+    const up = () => { bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); bar.removeEventListener('pointercancel', up) };
+    bar.addEventListener('pointermove', move); bar.addEventListener('pointerup', up); bar.addEventListener('pointercancel', up);
+  });
+
+  /* sem músicas ainda */
+  if(!tracks.length){
+    artist.textContent = 'adicione músicas'; cover.src = DEFAULT_AVATAR;
+    sel.innerHTML = '<option>(vazio)</option>'; sel.disabled = true; seek.disabled = true;
+    root.querySelectorAll('.cd-btns .cd-btn').forEach(b => b.disabled = true);
+    q('cdEmbed').hidden = true;
+    q('cdNote').textContent = 'cole links de músicas do Spotify na lista TRACKS, no final do index.html.';
+    return;
+  }
+
+  /* lista de faixas + busca de título/capa quando faltar */
+  const label = t => `${t.artist ? t.artist + ' – ' : ''}${t.title || '…'}`;
+  function fillSelect(){
+    sel.innerHTML = '';
+    tracks.forEach((t, i) => { const o = document.createElement('option'); o.value = i; o.textContent = label(t); sel.append(o) });
+    sel.value = idx;
+  }
+  async function enrich(t){
+    if(t.title && t.cover) return;
+    try{
+      const r = await fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent('https://open.spotify.com/' + t.uri.split(':').slice(1).join('/')));
+      const j = await r.json(); t.title ||= j.title; t.cover ||= j.thumbnail_url;
+    }catch{ /* sem internet ou bloqueado: segue com o que tem */ }
+  }
+
+  let ctrl = null, idx = 0, dragging = false, shuffle = false, lastNext = 0;
+  function show(){ const t = tracks[idx]; artist.textContent = t.artist || '—'; cover.src = t.cover || DEFAULT_AVATAR; sel.value = idx }
+  function load(auto){
+    show(); if(!ctrl) return;
+    ctrl.loadUri(tracks[idx].uri); seek.value = 0;
+    if(auto) setTimeout(() => ctrl.play(), 400);
+  }
+  function step(d, auto){
+    const n = tracks.length;
+    idx = shuffle && n > 1 ? (idx + 1 + Math.floor(Math.random() * (n - 1))) % n : (idx + d + n) % n;
+    load(auto);
+  }
+
+  fillSelect(); show();
+  Promise.all(tracks.map(enrich)).then(() => { fillSelect(); show() });
+
+  sel.onchange = () => { idx = +sel.value; load(true) };
+  q('cdPrev').onclick = () => step(-1, true);
+  q('cdNext').onclick = () => step(1, true);
+  playBtn.onclick = () => ctrl?.togglePlay();
+  q('cdStop').onclick = () => { ctrl?.pause(); ctrl?.seek(0); seek.value = 0 };
+  q('cdShuf').onclick = e => { shuffle = !shuffle; e.currentTarget.setAttribute('aria-pressed', shuffle) };
+  seek.oninput = () => { dragging = true };
+  seek.onchange = () => { ctrl?.seek(+seek.value); dragging = false };
+
+  /* Spotify iFrame API */
+  window.onSpotifyIframeApiReady = IFrameAPI => {
+    IFrameAPI.createController(q('cdSlot'), { uri: tracks[idx].uri, width: '100%', height: 80 }, c => {
+      ctrl = c;
+      c.addListener('playback_update', e => {
+        const d = e.data || {};
+        playBtn.textContent = d.isPaused ? '▶' : '❚❚';
+        if(!dragging){ seek.max = Math.max(1, Math.floor((d.duration || 0) / 1000)); seek.value = Math.floor((d.position || 0) / 1000) }
+        if(d.duration > 0 && d.position >= d.duration - 300 && Date.now() - lastNext > 3000){ lastNext = Date.now(); step(1, true) }
+      });
+    });
+  };
+  const sc = document.createElement('script'); sc.src = 'https://open.spotify.com/embed/iframe-api/v1'; sc.async = true; document.body.append(sc);
+})();
 </script>
 </body>
 </html>
