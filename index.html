@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cantinho</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --hot:#ff3fa4; --bubble:#ff86c8; --candy:#ffc2e2; --blush:#fff0f8;
+  --berry:#7a1250; --lilac:#d9c8ff; --white:#fff;
+  --display:'Bagel Fat One','Trebuchet MS',sans-serif;
+  --body:Verdana,Tahoma,Geneva,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font:14px/1.55 var(--body);color:var(--berry);
+  background-color:#ff5cb0;
+  background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'><polygon fill='white' fill-opacity='.35' points='45,27 49,39 62,39 51,47 55,59 45,52 35,59 39,47 28,39 41,39'/></svg>");
+}
+a{color:var(--hot);font-weight:bold}
+a:hover{color:var(--berry)}
+:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+img{max-width:100%}
+
+/* ---------- topo ---------- */
+.top{background:linear-gradient(#ff8ccb,#ff3fa4);border-bottom:3px solid var(--berry)}
+.top-in{max-width:1000px;margin:auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-size:30px;color:#fff;text-decoration:none;text-shadow:2px 2px 0 var(--berry),-1px -1px 0 var(--berry),1px -1px 0 var(--berry),-1px 1px 0 var(--berry)}
+.logo small{display:block;font:11px var(--body);color:#fff;text-shadow:none;margin-top:-4px}
+.who{color:#fff;font-size:13px}
+.who a{color:#fff}
+.who .btn{margin-left:6px}
+.nav{background:var(--candy);border-bottom:3px solid var(--berry)}
+.nav-in{max-width:1000px;margin:auto;padding:0 10px;display:flex;flex-wrap:wrap}
+.nav a{padding:8px 12px;text-decoration:none;color:var(--berry);border-right:1px solid var(--bubble)}
+.nav a:hover{background:var(--blush)}
+.nav a[aria-current="page"]{background:var(--blush);text-decoration:underline}
+
+main{max-width:1000px;margin:20px auto;padding:0 16px}
+
+/* ---------- janelinhas ---------- */
+.win{background:var(--blush);border:2px solid var(--berry);border-radius:12px;box-shadow:5px 5px 0 var(--berry);overflow:hidden;margin-bottom:20px}
+.win-bar{background:linear-gradient(#ff8ccb,#ff3fa4);color:#fff;font-family:var(--display);font-size:16px;padding:6px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--berry)}
+.win-bar .dots{font-family:var(--body);font-size:12px;letter-spacing:3px}
+.win-body{padding:14px}
+.win-body>*:first-child{margin-top:0}
+.win-body>*:last-child{margin-bottom:0}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0 0 8px;line-height:1.15}
+h1{font-size:34px}
+.cols{display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:start}
+.cols-2{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start}
+@media(max-width:780px){.cols,.cols-2{grid-template-columns:1fr}}
+
+/* ---------- controles ---------- */
+.btn{display:inline-block;font:bold 13px var(--body);color:#fff;background:linear-gradient(#ff7ac0,#ff3fa4);border:2px solid var(--berry);border-radius:8px;padding:6px 14px;cursor:pointer;text-decoration:none;box-shadow:0 3px 0 var(--berry)}
+.btn:hover{color:#fff;filter:brightness(1.06)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--berry)}
+.btn.alt{background:linear-gradient(#fff,var(--candy));color:var(--berry)}
+.btn.alt:hover{color:var(--berry)}
+.btn.sm{padding:3px 10px;font-size:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{display:block;font-weight:bold;margin:12px 0 4px}
+input[type=text],input[type=password],textarea,select{width:100%;font:14px var(--body);color:var(--berry);background:#fff;border:2px solid var(--berry);border-radius:6px;padding:7px 9px}
+textarea{min-height:110px;resize:vertical}
+.hint{font-size:12px;opacity:.8;margin:3px 0 0}
+.err{background:#fff;border:2px dashed var(--hot);padding:8px 10px;border-radius:6px;margin-top:12px}
+.empty{text-align:center;padding:18px 8px}
+.empty .big{font-size:34px}
+
+/* ---------- perfil ---------- */
+.avatar{width:100%;aspect-ratio:1;object-fit:cover;border:2px solid var(--berry);background:var(--candy);display:block}
+.mini{width:54px;height:54px;object-fit:cover;border:2px solid var(--berry);display:block}
+.bubble{position:relative;background:var(--candy);border:2px solid var(--berry);padding:10px 12px;margin:12px 0 18px;border-radius:4px}
+.bubble::after{content:"";position:absolute;left:22px;bottom:-14px;border:7px solid transparent;border-top:7px solid var(--berry);border-left-color:var(--berry)}
+.bubble b{display:block;color:var(--hot);font-size:15px}
+.kv{width:100%;border-collapse:collapse}
+.kv th{width:78px;background:var(--candy);text-align:center;font-size:12px;padding:5px;border:1px solid var(--bubble);vertical-align:top}
+.kv td{padding:5px 8px;border:1px solid var(--bubble);font-size:12px}
+.friends{display:flex;flex-wrap:wrap;gap:8px}
+.friends a{text-decoration:none;font-size:11px;text-align:center;display:block;width:54px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.gallery button{padding:0;border:0;background:none;cursor:pointer;position:relative}
+.gallery img{display:block;width:100%;border:2px solid var(--berry);background:#fff}
+.gallery .x{position:absolute;top:4px;right:4px}
+.item{padding:10px 0;border-bottom:1px dashed var(--bubble)}
+.item:last-child{border-bottom:0}
+.item .meta{font-size:12px;opacity:.8}
+.item p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.scrap{display:flex;gap:10px}
+.scrap img{flex:none}
+.post-body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.7;max-width:70ch}
+
+/* ---------- câmera ---------- */
+.cam{position:relative;max-width:700px;margin:0 auto;filter:drop-shadow(5px 5px 0 var(--berry))}
+.cam>img{display:block;width:100%}
+.screen{position:absolute;left:8.98%;top:22.96%;width:56.73%;height:65.55%;background:#fff;overflow:hidden}
+.screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.screen video.on{display:block}
+.screen video.mirror{transform:scaleX(-1)}
+.screen .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:13px;color:var(--berry)}
+.screen .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.screen .flash.go{animation:flash .35s ease-out}
+@keyframes flash{0%{opacity:1}100%{opacity:0}}
+.shutter{position:absolute;left:87.07%;top:72.2%;width:7%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:0;background:transparent;cursor:pointer}
+.shutter:hover{box-shadow:0 0 0 3px var(--hot)}
+.shot{max-width:700px;margin:0 auto}
+.shot img{display:block;width:100%;border:2px solid var(--berry)}
+
+dialog{border:2px solid var(--berry);border-radius:12px;background:var(--blush);padding:10px;box-shadow:6px 6px 0 var(--berry);max-width:min(92vw,760px)}
+dialog::backdrop{background:rgba(122,18,80,.55)}
+dialog img{display:block;max-width:100%;max-height:75vh}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--berry);color:#fff;padding:9px 16px;border-radius:999px;z-index:50;font-size:13px}
+footer{text-align:center;color:#fff;font-size:12px;padding:10px 0 30px}
+
+@media(prefers-reduced-motion:reduce){.screen .flash.go{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="#/">cantinho<small>um espaço pras amigas ✿</small></a>
+    <div class="who" id="who"></div>
+  </div>
+</header>
+<nav class="nav" aria-label="principal">
+  <div class="nav-in" id="nav"></div>
+</nav>
+<main id="app"></main>
+<footer>feito com carinho ★ 2026</footer>
+<dialog id="lightbox"><img alt=""><div class="row" style="margin-top:8px"><a class="btn sm" id="lbDl" download="foto.jpg">baixar</a><button class="btn sm alt" id="lbClose">fechar</button></div></dialog>
+
+<script>
+/* =========================================================
+   CAMADA DE DADOS
+   Hoje tudo fica no localStorage (só no navegador de quem usa).
+   Quando conectar o banco (Supabase, Firebase, Vercel Postgres...),
+   é só reescrever as funções do objeto `db` — o resto do site
+   continua igual.
+   ========================================================= */
+const db = {
+  _get(k, d){ try{ const v = JSON.parse(localStorage.getItem('cantinho:'+k)); return v ?? d }catch{ return d } },
+  _set(k, v){
+    try{ localStorage.setItem('cantinho:'+k, JSON.stringify(v)); return true }
+    catch{ toast('armazenamento cheio — apague algumas fotos'); return false }
+  },
+  uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
+
+  async users(){ return this._get('users', []) },
+  async userById(id){ return (await this.users()).find(u => u.id === id) },
+  async userByName(n){ return (await this.users()).find(u => u.username === n) },
+  async saveUser(u){
+    const all = await this.users(); const i = all.findIndex(x => x.id === u.id);
+    if(i >= 0) all[i] = u; else all.push(u);
+    return this._set('users', all);
+  },
+
+  async posts(){ return this._get('posts', []).sort((a,b) => b.createdAt - a.createdAt) },
+  async addPost(p){ const all = this._get('posts', []); all.push(p); return this._set('posts', all) },
+  async deletePost(id){ this._set('posts', this._get('posts', []).filter(p => p.id !== id)) },
+
+  async scraps(toId){ return this._get('scraps', []).filter(s => s.toId === toId).sort((a,b) => b.createdAt - a.createdAt) },
+  async addScrap(s){ const all = this._get('scraps', []); all.push(s); return this._set('scraps', all) },
+  async deleteScrap(id){ this._set('scraps', this._get('scraps', []).filter(s => s.id !== id)) },
+
+  async photos(userId){ return this._get('photos', []).filter(p => !userId || p.userId === userId).sort((a,b) => b.createdAt - a.createdAt) },
+  async addPhoto(p){ const all = this._get('photos', []); all.push(p); return this._set('photos', all) },
+  async deletePhoto(id){ this._set('photos', this._get('photos', []).filter(p => p.id !== id)) },
+
+  session(){ return this._get('session', null) },
+  setSession(id){ id ? this._set('session', id) : localStorage.removeItem('cantinho:session') },
+};
+
+/* ---------- utilidades ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const app = $('#app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = ts => new Date(ts).toLocaleDateString('pt-BR');
+const DEFAULT_AVATAR = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#ffc2e2'/><polygon fill='#ff3fa4' points='50,16 58,40 84,40 63,55 71,80 50,65 29,80 37,55 16,40 42,40'/></svg>");
+const avatar = u => u?.photo || DEFAULT_AVATAR;
+let me = null;
+
+function toast(msg){
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+  document.body.append(t); setTimeout(() => t.remove(), 2600);
+}
+async function sha(s){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+function fileToImage(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img) };
+    img.onerror = () => rej(new Error('imagem inválida'));
+    img.src = url;
+  });
+}
+function squareCrop(img, size = 320){
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const s = Math.min(img.naturalWidth, img.naturalHeight);
+  c.getContext('2d').drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+  return c.toDataURL('image/jpeg', .85);
+}
+const win = (title, body, extra = '') => `<section class="win ${extra}"><div class="win-bar"><span>${title}</span><span class="dots" aria-hidden="true">_ ▢ ✕</span></div><div class="win-body">${body}</div></section>`;
+const empty = (emoji, text, action = '') => `<div class="empty"><div class="big" aria-hidden="true">${emoji}</div><p>${text}</p>${action}</div>`;
+
+/* ---------- topo + menu ---------- */
+function chrome(){
+  $('#who').innerHTML = me
+    ? `oi, <a href="#/u/${esc(me.username)}">${esc(me.name)}</a> <a class="btn sm alt" href="#/" id="logout">sair</a>`
+    : `<a class="btn sm alt" href="#/entrar">entrar</a><a class="btn sm" href="#/criar">criar perfil</a>`;
+  const out = $('#logout'); if(out) out.onclick = () => { db.setSession(null); me = null; route() };
+  const links = [['#/', 'início'], ['#/blog', 'blog'], ['#/perfis', 'perfis'], ['#/camera', 'câmera']];
+  if(me) links.push([`#/u/${me.username}`, 'meu perfil']);
+  const cur = location.hash || '#/';
+  $('#nav').innerHTML = links.map(([h, t]) => `<a href="${esc(h)}" ${cur === h ? 'aria-current="page"' : ''}>${t}</a>`).join('');
+}
+
+/* ---------- páginas ---------- */
+async function home(){
+  const [posts, users, photos] = await Promise.all([db.posts(), db.users(), db.photos()]);
+  const byId = Object.fromEntries(users.map(u => [u.id, u]));
+  const postList = posts.length
+    ? posts.slice(0, 5).map(p => `<div class="item"><a href="#/post/${p.id}">${esc(p.title)}</a><div class="meta">por ${esc(byId[p.userId]?.name || '?')} · ${fmt(p.createdAt)}</div></div>`).join('')
+    : empty('✎', 'ainda não tem nenhum post por aqui.', me ? '<a class="btn" href="#/novo-post">escrever o primeiro</a>' : '<a class="btn" href="#/criar">criar perfil pra escrever</a>');
+  const newPeople = users.length
+    ? `<div class="friends">${users.slice(-8).reverse().map(u => `<a href="#/u/${esc(u.username)}"><img class="mini" src="${avatar(u)}" alt="">${esc(u.name)}</a>`).join('')}</div>`
+    : empty('✿', 'nenhum perfil ainda. seja a primeira!', '<a class="btn" href="#/criar">criar perfil</a>');
+
+  app.innerHTML = `
+    <div class="cols-2">
+      <div>
+        ${win('bem-vinda ao cantinho ★', `
+          <h1>oi, amiga!</h1>
+          <p>aqui cada uma tem seu perfil, deixa recado, escreve no blog e tira foto na câmera rosa. tudo bem anos 2000.</p>
+          <div class="row">${me ? '<a class="btn" href="#/novo-post">escrever post</a>' : '<a class="btn" href="#/criar">criar meu perfil</a>'}<a class="btn alt" href="#/blog">ler o blog</a></div>`)}
+        ${win('últimos posts', postList)}
+      </div>
+      <div>
+        <a href="#/camera" aria-label="ir pra câmera" style="display:block;margin-bottom:20px;filter:drop-shadow(5px 5px 0 var(--berry))"><img src="camera.png" alt="câmera digital rosa" style="display:block;width:100%"></a>
+        ${win('perfis novos', newPeople)}
+        ${photos.length ? win('fotos recentes', `<div class="gallery">${photos.slice(0, 4).map(ph => `<button data-photo="${ph.id}"><img src="${ph.dataUrl}" alt="foto de ${esc(byId[ph.userId]?.name || '')}"></button>`).join('')}</div>`) : ''}
+      </div>
+    </div>`;
+  bindGallery(photos);
+}
+
+async function blog(){
+  const [posts, users] = await Promise.all([db.posts(), db.users()]);
+  const byId = Object.fromEntries(users.map(u => [u.id, u]));
+  app.innerHTML = win('blog', `
+    <div class="row" style="justify-content:space-between;margin-bottom:6px"><h1>blog</h1>${me ? '<a class="btn" href="#/novo-post">novo post</a>' : '<a class="btn alt" href="#/entrar">entre pra escrever</a>'}</div>
+    ${posts.length ? posts.map(p => `<article class="item"><h3><a href="#/post/${p.id}">${esc(p.title)}</a></h3><div class="meta">por <a href="#/u/${esc(byId[p.userId]?.username || '')}">${esc(byId[p.userId]?.name || '?')}</a> · ${fmt(p.createdAt)}</div><p>${esc(p.body.slice(0, 220))}${p.body.length > 220 ? '…' : ''}</p></article>`).join('') : empty('✎', 'o blog está vazio por enquanto.')}`);
+}
+
+async function post(id){
+  const p = (await db.posts()).find(x => x.id === id);
+  if(!p){ app.innerHTML = win('ops', empty('?', 'esse post não existe mais.', '<a class="btn" href="#/blog">voltar pro blog</a>')); return }
+  const u = await db.userById(p.userId);
+  app.innerHTML = win(esc(p.title), `
+    <div class="meta" style="margin-bottom:12px">por <a href="#/u/${esc(u?.username || '')}">${esc(u?.name || '?')}</a> · ${fmt(p.createdAt)}</div>
+    <div class="post-body">${esc(p.body)}</div>
+    <div class="row" style="margin-top:16px"><a class="btn alt sm" href="#/blog">← blog</a>${me?.id === p.userId ? '<button class="btn sm alt" id="delPost">apagar post</button>' : ''}</div>`);
+  const d = $('#delPost'); if(d) d.onclick = async () => { if(confirm('apagar esse post?')){ await db.deletePost(p.id); location.hash = '#/blog' } };
+}
+
+async function newPost(){
+  if(!me){ location.hash = '#/entrar'; return }
+  app.innerHTML = win('novo post', `
+    <form id="f"><label for="t">título</label><input id="t" type="text" maxlength="90" required>
+    <label for="b">texto</label><textarea id="b" style="min-height:260px" required></textarea>
+    <div class="row" style="margin-top:14px"><button class="btn">publicar</button><a class="btn alt" href="#/blog">cancelar</a></div></form>`);
+  $('#f').onsubmit = async e => {
+    e.preventDefault();
+    const ok = await db.addPost({ id: db.uid(), userId: me.id, title: $('#t').value.trim(), body: $('#b').value.trim(), createdAt: Date.now() });
+    if(ok){ toast('publicado!'); location.hash = '#/blog' }
+  };
+}
+
+async function people(){
+  const users = await db.users();
+  app.innerHTML = win('perfis', users.length
+    ? `<div class="gallery">${users.map(u => `<a href="#/u/${esc(u.username)}" style="text-decoration:none;text-align:center"><img class="avatar" src="${avatar(u)}" alt=""><span>${esc(u.name)}</span></a>`).join('')}</div>`
+    : empty('✿', 'ainda não tem ninguém aqui.', '<a class="btn" href="#/criar">criar o primeiro perfil</a>'));
+}
+
+async function profile(username){
+  const u = await db.userByName(username);
+  if(!u){ app.innerHTML = win('ops', empty('?', 'não achei esse perfil.', '<a class="btn" href="#/perfis">ver todos os perfis</a>')); return }
+  const [posts, scraps, photos, users] = await Promise.all([db.posts(), db.scraps(u.id), db.photos(u.id), db.users()]);
+  const byId = Object.fromEntries(users.map(x => [x.id, x]));
+  const mine = me?.id === u.id;
+  const myPosts = posts.filter(p => p.userId === u.id);
+  const friends = (u.friends || []).map(id => byId[id]).filter(Boolean);
+  const isFriend = me && (me.friends || []).includes(u.id);
+  const it = u.interests || {};
+  const rows = [['geral', it.geral], ['música', it.musica], ['filmes', it.filmes]].filter(r => r[1]);
+
+  app.innerHTML = `<div class="cols">
+    <aside>
+      ${win(esc(u.name), `
+        <img class="avatar" src="${avatar(u)}" alt="foto de ${esc(u.name)}">
+        ${u.status ? `<div class="bubble"><b>${esc(u.name)}</b>${esc(u.status)}</div>` : '<div style="height:14px"></div>'}
+        ${u.mood ? `<p>humor: <b>${esc(u.mood)}</b></p>` : ''}
+        <p class="hint">@${esc(u.username)} · no cantinho desde ${fmt(u.createdAt)}</p>
+        <div class="row" style="margin-top:10px">${mine
+          ? '<a class="btn sm" href="#/editar">editar perfil</a><a class="btn sm alt" href="#/novo-post">novo post</a>'
+          : `<button class="btn sm" id="fr">${isFriend ? '✓ amigas' : '+ adicionar amiga'}</button><button class="btn sm alt" id="goScrap">deixar recado</button>`}</div>`)}
+      ${rows.length ? win('interesses', `<table class="kv">${rows.map(([k, v]) => `<tr><th scope="row">${k}</th><td>${esc(v)}</td></tr>`).join('')}</table>`) : ''}
+      ${win(`amigas (${friends.length})`, friends.length ? `<div class="friends">${friends.map(f => `<a href="#/u/${esc(f.username)}"><img class="mini" src="${avatar(f)}" alt="">${esc(f.name)}</a>`).join('')}</div>` : '<p class="hint">ninguém por enquanto.</p>')}
+    </aside>
+    <div>
+      ${u.about ? win('sobre mim', `<div class="post-body" style="font-size:14px">${esc(u.about)}</div>`) : ''}
+      ${win(`fotos da câmera (${photos.length})`, photos.length
+        ? `<div class="gallery">${photos.map(ph => `<button data-photo="${ph.id}"><img src="${ph.dataUrl}" alt="foto tirada na câmera">${mine ? `<span class="btn sm x" data-del-photo="${ph.id}" role="button" aria-label="apagar foto">✕</span>` : ''}</button>`).join('')}</div>`
+        : empty('📷', mine ? 'você ainda não tirou nenhuma foto.' : 'sem fotos por enquanto.', mine ? '<a class="btn" href="#/camera">abrir a câmera</a>' : ''))}
+      ${win(`blog de ${esc(u.name)}`, myPosts.length ? myPosts.map(p => `<div class="item"><a href="#/post/${p.id}">${esc(p.title)}</a><div class="meta">${fmt(p.createdAt)}</div></div>`).join('') : '<p class="hint">nenhum post ainda.</p>')}
+      <div id="recados">${win(`recados (${scraps.length})`, `
+        ${me && !mine ? `<form id="sf"><label for="st" style="margin-top:0">deixe um recado pra ${esc(u.name)}</label><textarea id="st" maxlength="400" style="min-height:70px" required></textarea><div class="row" style="margin-top:8px"><button class="btn sm">enviar recado</button></div></form>` : !me ? `<p><a href="#/entrar">entre</a> pra deixar um recado.</p>` : ''}
+        ${scraps.length ? scraps.map(s => { const f = byId[s.fromId]; return `<div class="item scrap"><a href="#/u/${esc(f?.username || '')}"><img class="mini" src="${avatar(f)}" alt=""></a><div><div class="meta"><a href="#/u/${esc(f?.username || '')}">${esc(f?.name || '?')}</a> · ${fmt(s.createdAt)} ${(mine || me?.id === s.fromId) ? `<button class="btn sm alt" data-del-scrap="${s.id}" aria-label="apagar recado">apagar</button>` : ''}</div><p>${esc(s.text)}</p></div></div>` }).join('') : '<p class="hint">nenhum recado ainda.</p>'}`)}</div>
+    </div></div>`;
+
+  bindGallery(photos, mine);
+  const fr = $('#fr'); if(fr) fr.onclick = async () => {
+    if(!me){ location.hash = '#/entrar'; return }
+    const set = new Set(me.friends || []); set.has(u.id) ? set.delete(u.id) : set.add(u.id);
+    me.friends = [...set]; await db.saveUser(me); route();
+  };
+  const gs = $('#goScrap'); if(gs) gs.onclick = () => { $('#recados').scrollIntoView({ behavior: 'smooth' }); $('#st')?.focus() };
+  const sf = $('#sf'); if(sf) sf.onsubmit = async e => {
+    e.preventDefault();
+    if(await db.addScrap({ id: db.uid(), toId: u.id, fromId: me.id, text: $('#st').value.trim(), createdAt: Date.now() })) route();
+  };
+  document.querySelectorAll('[data-del-scrap]').forEach(b => b.onclick = async () => { await db.deleteScrap(b.dataset.delScrap); route() });
+}
+
+/* ---------- galeria + lightbox ---------- */
+function bindGallery(photos, canDelete = false){
+  const lb = $('#lightbox');
+  document.querySelectorAll('[data-photo]').forEach(b => b.onclick = e => {
+    if(e.target.closest('[data-del-photo]')) return;
+    const ph = photos.find(p => p.id === b.dataset.photo); if(!ph) return;
+    $('img', lb).src = ph.dataUrl; $('#lbDl').href = ph.dataUrl; lb.showModal();
+  });
+  document.querySelectorAll('[data-del-photo]').forEach(b => b.onclick = async e => {
+    e.stopPropagation(); if(confirm('apagar essa foto?')){ await db.deletePhoto(b.dataset.delPhoto); route() }
+  });
+}
+$('#lbClose').onclick = () => $('#lightbox').close();
+$('#lightbox').addEventListener('click', e => { if(e.target.id === 'lightbox') e.currentTarget.close() });
+
+/* ---------- criar / entrar / editar ---------- */
+function profileFields(u = {}){
+  const it = u.interests || {};
+  return `
+    <label for="name">nome</label><input id="name" type="text" maxlength="30" required value="${esc(u.name || '')}">
+    <label for="photo">foto de perfil</label><input id="photo" type="file" accept="image/*">
+    <label for="status">frase do momento</label><input id="status" type="text" maxlength="120" value="${esc(u.status || '')}" placeholder="ex: im playing videogames!">
+    <label for="mood">humor</label><input id="mood" type="text" maxlength="30" value="${esc(u.mood || '')}" placeholder="ex: feliz ✿">
+    <label for="about">sobre mim</label><textarea id="about" maxlength="900">${esc(u.about || '')}</textarea>
+    <label for="geral">interesses: geral</label><input id="geral" type="text" maxlength="160" value="${esc(it.geral || '')}">
+    <label for="musica">interesses: música</label><input id="musica" type="text" maxlength="160" value="${esc(it.musica || '')}">
+    <label for="filmes">interesses: filmes</label><input id="filmes" type="text" maxlength="160" value="${esc(it.filmes || '')}">`;
+}
+async function readProfileForm(base){
+  let photo = base.photo; const f = $('#photo').files[0];
+  if(f){ try{ photo = squareCrop(await fileToImage(f)) }catch{ toast('não consegui ler essa imagem') } }
+  return { ...base, name: $('#name').value.trim(), photo, status: $('#status').value.trim(), mood: $('#mood').value.trim(), about: $('#about').value.trim(),
+    interests: { geral: $('#geral').value.trim(), musica: $('#musica').value.trim(), filmes: $('#filmes').value.trim() } };
+}
+
+async function signup(){
+  app.innerHTML = win('criar perfil', `
+    <form id="f" style="max-width:520px">
+      <label for="username" style="margin-top:0">usuário</label><input id="username" type="text" maxlength="20" pattern="[a-z0-9_]{3,20}" required autocomplete="username">
+      <p class="hint">3 a 20 letras minúsculas, números ou _ (vira o endereço do seu perfil)</p>
+      <label for="pass">senha</label><input id="pass" type="password" minlength="4" required autocomplete="new-password">
+      ${profileFields()}
+      <div id="msg"></div>
+      <div class="row" style="margin-top:14px"><button class="btn">criar meu perfil</button><a class="btn alt" href="#/entrar">já tenho perfil</a></div>
+    </form>`);
+  $('#f').onsubmit = async e => {
+    e.preventDefault();
+    const username = $('#username').value.trim().toLowerCase();
+    if(await db.userByName(username)){ $('#msg').innerHTML = '<div class="err" role="alert">esse usuário já existe. tente outro.</div>'; return }
+    const u = await readProfileForm({ id: db.uid(), username, pass: await sha($('#pass').value), createdAt: Date.now(), friends: [] });
+    if(await db.saveUser(u)){ db.setSession(u.id); me = u; toast('perfil criado!'); location.hash = '#/u/' + username }
+  };
+}
+
+async function login(){
+  app.innerHTML = win('entrar', `
+    <form id="f" style="max-width:380px">
+      <label for="username" style="margin-top:0">usuário</label><input id="username" type="text" required autocomplete="username">
+      <label for="pass">senha</label><input id="pass" type="password" required autocomplete="current-password">
+      <div id="msg"></div>
+      <div class="row" style="margin-top:14px"><button class="btn">entrar</button><a class="btn alt" href="#/criar">criar perfil</a></div>
+    </form>`);
+  $('#f').onsubmit = async e => {
+    e.preventDefault();
+    const u = await db.userByName($('#username').value.trim().toLowerCase());
+    if(!u || u.pass !== await sha($('#pass').value)){ $('#msg').innerHTML = '<div class="err" role="alert">usuário ou senha incorretos.</div>'; return }
+    db.setSession(u.id); me = u; location.hash = '#/u/' + u.username;
+  };
+}
+
+async function edit(){
+  if(!me){ location.hash = '#/entrar'; return }
+  app.innerHTML = win('editar perfil', `<form id="f" style="max-width:520px">${profileFields(me)}
+    <div class="row" style="margin-top:14px"><button class="btn">salvar</button><a class="btn alt" href="#/u/${esc(me.username)}">cancelar</a></div></form>`);
+  $('#f').onsubmit = async e => {
+    e.preventDefault();
+    const u = await readProfileForm(me);
+    if(await db.saveUser(u)){ me = u; toast('salvo!'); location.hash = '#/u/' + u.username }
+  };
+}
+
+/* ---------- câmera ---------- */
+const tpl = new Image(); tpl.src = 'camera.png';
+const SCREEN = { x: 66, y: 110, w: 417, h: 314 }; // área branca da tela dentro do camera.png (735x479)
+let stream = null, facing = 'user', lastShot = null;
+
+function stopCam(){ stream?.getTracks().forEach(t => t.stop()); stream = null }
+
+function compose(source, sw, sh, mirror){
+  const c = document.createElement('canvas'); c.width = 735; c.height = 479;
+  const x = c.getContext('2d');
+  x.drawImage(tpl, 0, 0, 735, 479);
+  const { x: dx, y: dy, w: dw, h: dh } = SCREEN;
+  const r = Math.max(dw / sw, dh / sh), cw = dw / r, ch = dh / r, sx = (sw - cw) / 2, sy = (sh - ch) / 2;
+  x.save(); x.beginPath(); x.rect(dx, dy, dw, dh); x.clip();
+  if(mirror){ x.translate(dx + dw, dy); x.scale(-1, 1); x.drawImage(source, sx, sy, cw, ch, 0, 0, dw, dh) }
+  else x.drawImage(source, sx, sy, cw, ch, dx, dy, dw, dh);
+  x.restore();
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  x.font = 'bold 15px "Courier New",monospace'; x.textAlign = 'right';
+  x.shadowColor = 'rgba(0,0,0,.65)'; x.shadowBlur = 2;
+  x.fillStyle = '#ff9a1f'; x.fillText(`'${String(d.getFullYear()).slice(2)}  ${p(d.getMonth() + 1)}  ${p(d.getDate())}`, dx + dw - 10, dy + dh - 10);
+  return c.toDataURL('image/jpeg', .88);
+}
+
+async function camera(){
+  app.innerHTML = win('câmera', `
+    <div class="cam">
+      <img src="camera.png" alt="câmera digital rosa">
+      <div class="screen">
+        <video id="vid" playsinline muted autoplay></video>
+        <div class="msg" id="msg">ligue a câmera ou envie uma foto</div>
+        <div class="flash" id="flash"></div>
+      </div>
+      <button class="shutter" id="shutter" aria-label="tirar foto" title="tirar foto"></button>
+    </div>
+    <div class="row" style="justify-content:center;margin:20px 0 4px">
+      <button class="btn" id="on">ligar câmera</button>
+      <button class="btn alt" id="flip">virar câmera</button>
+      <button class="btn alt" id="snap">tirar foto</button>
+      <label class="btn alt" style="margin:0">enviar foto<input id="up" type="file" accept="image/*" hidden></label>
+    </div>
+    <p class="hint" style="text-align:center">dica: o botão redondo da câmera também tira a foto.</p>
+    <div id="result"></div>`);
+  const vid = $('#vid'), msg = $('#msg');
+
+  async function start(){
+    stopCam();
+    if(!navigator.mediaDevices?.getUserMedia){ msg.textContent = 'seu navegador não liberou a câmera. use "enviar foto".'; return }
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing, width: { ideal: 1280 } }, audio: false });
+      vid.srcObject = stream; vid.classList.add('on'); vid.classList.toggle('mirror', facing === 'user'); msg.style.display = 'none';
+    }catch{
+      msg.style.display = ''; msg.textContent = 'não deu pra acessar a câmera. libere a permissão no navegador ou use "enviar foto".';
+    }
+  }
+  function flash(){ const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go') }
+  function snap(){
+    if(!stream || !vid.videoWidth){ toast('ligue a câmera primeiro'); return }
+    flash(); showShot(compose(vid, vid.videoWidth, vid.videoHeight, facing === 'user'));
+  }
+  $('#on').onclick = start;
+  $('#flip').onclick = () => { facing = facing === 'user' ? 'environment' : 'user'; start() };
+  $('#snap').onclick = snap; $('#shutter').onclick = snap;
+  $('#up').onchange = async e => {
+    const f = e.target.files[0]; if(!f) return;
+    try{ const img = await fileToImage(f); flash(); showShot(compose(img, img.naturalWidth, img.naturalHeight, false)) }
+    catch{ toast('não consegui ler essa imagem') }
+  };
+  if(!tpl.complete) await new Promise(r => { tpl.onload = r; tpl.onerror = r });
+}
+
+function showShot(dataUrl){
+  lastShot = dataUrl;
+  $('#result').innerHTML = `<div class="shot" style="margin-top:20px"><img src="${dataUrl}" alt="foto que você acabou de tirar">
+    <div class="row" style="margin-top:10px">
+      ${me ? '<button class="btn" id="save">salvar no meu perfil</button>' : '<a class="btn" href="#/entrar">entre pra salvar no perfil</a>'}
+      <a class="btn alt" id="dl" download="foto-cantinho.jpg" href="${dataUrl}">baixar</a>
+      <button class="btn alt" id="discard">descartar</button></div></div>`;
+  $('#result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const s = $('#save'); if(s) s.onclick = async () => {
+    if(await db.addPhoto({ id: db.uid(), userId: me.id, dataUrl: lastShot, createdAt: Date.now() })){ toast('foto salva no seu perfil!'); location.hash = '#/u/' + me.username }
+  };
+  $('#discard').onclick = () => { $('#result').innerHTML = ''; lastShot = null };
+}
+
+/* ---------- roteador ---------- */
+const routes = [
+  [/^#\/?$/, home], [/^#\/blog$/, blog], [/^#\/post\/(.+)$/, post], [/^#\/perfis$/, people],
+  [/^#\/u\/(.+)$/, profile], [/^#\/camera$/, camera], [/^#\/entrar$/, login], [/^#\/criar$/, signup],
+  [/^#\/editar$/, edit], [/^#\/novo-post$/, newPost],
+];
+async function route(){
+  stopCam();
+  const h = location.hash || '#/';
+  me = db.session() ? await db.userById(db.session()) : null;
+  const hit = routes.map(([re, fn]) => [h.match(re), fn]).find(([m]) => m);
+  if(hit){ await hit[1](...hit[0].slice(1).map(decodeURIComponent)) }
+  else app.innerHTML = win('ops', empty('?', 'página não encontrada.', '<a class="btn" href="#/">voltar pro início</a>'));
+  chrome(); window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
