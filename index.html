@@ -169,8 +169,8 @@ select.cd-field{padding:0 2px}
    (A anon key é pública por design; quem protege os dados são as
    regras RLS criadas pelo supabase/setup.sql.)
    ========================================================= */
-const SUPABASE_URL = 'COLE_AQUI_A_URL';
-const SUPABASE_ANON_KEY = 'COLE_AQUI_A_ANON_KEY';
+const SUPABASE_URL = 'https://mjjrzwpbkitceccorxua.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qanJ6d3Bia2l0Y2VjY29yeHVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODE0MzMsImV4cCI6MjEwNjQ1NzQzM30.Mf_D5G1fmXw9BDx2WXuiIGoZYUcWvBC1BafLe_gKXe8';
 
 const sb = SUPABASE_URL.startsWith('COLE') ? null : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const BUCKET = 'fotos';
