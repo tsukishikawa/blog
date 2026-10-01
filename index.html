@@ -132,47 +132,115 @@ footer{text-align:center;color:#fff;font-size:12px;padding:10px 0 30px}
 </nav>
 <main id="app"></main>
 <footer>feito com carinho ★ 2026</footer>
-<dialog id="lightbox"><img alt=""><div class="row" style="margin-top:8px"><a class="btn sm" id="lbDl" download="foto.jpg">baixar</a><button class="btn sm alt" id="lbClose">fechar</button></div></dialog>
+<dialog id="lightbox"><img alt=""><div class="row" style="margin-top:8px"><a class="btn sm" id="lbDl" target="_blank" rel="noopener">abrir original</a><button class="btn sm alt" id="lbClose">fechar</button></div></dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* =========================================================
-   CAMADA DE DADOS
-   Hoje tudo fica no localStorage (só no navegador de quem usa).
-   Quando conectar o banco (Supabase, Firebase, Vercel Postgres...),
-   é só reescrever as funções do objeto `db` — o resto do site
-   continua igual.
+   CONFIGURAÇÃO DO SUPABASE
+   Cole aqui a URL e a chave pública (anon key) do seu projeto:
+   Supabase → Project Settings → API.
+   (A anon key é pública por design; quem protege os dados são as
+   regras RLS criadas pelo supabase/setup.sql.)
    ========================================================= */
-const db = {
-  _get(k, d){ try{ const v = JSON.parse(localStorage.getItem('cantinho:'+k)); return v ?? d }catch{ return d } },
-  _set(k, v){
-    try{ localStorage.setItem('cantinho:'+k, JSON.stringify(v)); return true }
-    catch{ toast('armazenamento cheio — apague algumas fotos'); return false }
-  },
-  uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
+const SUPABASE_URL = 'https://mjjrzwpbkitceccorxua.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qanJ6d3Bia2l0Y2VjY29yeHVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODE0MzMsImV4cCI6MjEwNjQ1NzQzM30.Mf_D5G1fmXw9BDx2WXuiIGoZYUcWvBC1BafLe_gKXe8';
 
-  async users(){ return this._get('users', []) },
+const sb = SUPABASE_URL.startsWith('COLE') ? null : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const BUCKET = 'fotos';
+const publicUrl = path => sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+async function uploadDataUrl(dataUrl, path){
+  const blob = await (await fetch(dataUrl)).blob();
+  const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg' });
+  if(error) throw error;
+  return path;
+}
+const toUser = (r, friends = []) => ({
+  id: r.id, username: r.username, name: r.name, photo: r.photo_url, status: r.status, mood: r.mood, about: r.about,
+  interests: { geral: r.geral, musica: r.musica, filmes: r.filmes }, createdAt: new Date(r.created_at).getTime(), friends,
+});
+const ok = ({ error }) => { if(error) throw error };
+
+/* ---------- camada de dados: tudo passa por aqui ---------- */
+const db = {
+  uid(){ return '' }, // os ids agora são gerados pelo banco
+  async _try(fn){ try{ return await fn() }catch(e){ console.error(e); toast('ops: ' + (e.message || 'algo deu errado')); return false } },
+
+  // login
+  async currentUser(){
+    const { data: { session } } = await sb.auth.getSession();
+    return session ? this.userById(session.user.id) : null;
+  },
+  async signUp({ email, password, username, name }){
+    const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username, name } } });
+    if(error) throw error; return data;
+  },
+  async signIn(email, password){ ok(await sb.auth.signInWithPassword({ email, password })) },
+  async signOut(){ await sb.auth.signOut() },
+
+  // perfis
+  async users(){
+    const [p, f] = await Promise.all([sb.from('profiles').select('*').order('created_at'), sb.from('friends').select('user_id,friend_id')]);
+    ok(p); ok(f);
+    const fm = {}; f.data.forEach(x => (fm[x.user_id] ||= []).push(x.friend_id));
+    return p.data.map(r => toUser(r, fm[r.id] || []));
+  },
   async userById(id){ return (await this.users()).find(u => u.id === id) },
   async userByName(n){ return (await this.users()).find(u => u.username === n) },
   async saveUser(u){
-    const all = await this.users(); const i = all.findIndex(x => x.id === u.id);
-    if(i >= 0) all[i] = u; else all.push(u);
-    return this._set('users', all);
+    return this._try(async () => {
+      let photo = u.photo;
+      if(photo?.startsWith('data:')) photo = publicUrl(await uploadDataUrl(photo, `${u.id}/avatar-${Date.now()}.jpg`));
+      ok(await sb.from('profiles').update({ name: u.name, photo_url: photo, status: u.status, mood: u.mood, about: u.about,
+        geral: u.interests.geral, musica: u.interests.musica, filmes: u.interests.filmes }).eq('id', u.id));
+      return true;
+    });
+  },
+  async toggleFriend(me, otherId){
+    return this._try(async () => {
+      const has = (me.friends || []).includes(otherId);
+      ok(has ? await sb.from('friends').delete().eq('user_id', me.id).eq('friend_id', otherId)
+             : await sb.from('friends').insert({ user_id: me.id, friend_id: otherId }));
+    });
   },
 
-  async posts(){ return this._get('posts', []).sort((a,b) => b.createdAt - a.createdAt) },
-  async addPost(p){ const all = this._get('posts', []); all.push(p); return this._set('posts', all) },
-  async deletePost(id){ this._set('posts', this._get('posts', []).filter(p => p.id !== id)) },
+  // posts
+  async posts(){
+    const r = await sb.from('posts').select('*').order('created_at', { ascending: false }); ok(r);
+    return r.data.map(x => ({ id: x.id, userId: x.user_id, title: x.title, body: x.body, createdAt: new Date(x.created_at).getTime() }));
+  },
+  async addPost(p){ return this._try(async () => { ok(await sb.from('posts').insert({ user_id: p.userId, title: p.title, body: p.body })); return true }) },
+  async deletePost(id){ return this._try(async () => ok(await sb.from('posts').delete().eq('id', id))) },
 
-  async scraps(toId){ return this._get('scraps', []).filter(s => s.toId === toId).sort((a,b) => b.createdAt - a.createdAt) },
-  async addScrap(s){ const all = this._get('scraps', []); all.push(s); return this._set('scraps', all) },
-  async deleteScrap(id){ this._set('scraps', this._get('scraps', []).filter(s => s.id !== id)) },
+  // recados
+  async scraps(toId){
+    const r = await sb.from('scraps').select('*').eq('to_id', toId).order('created_at', { ascending: false }); ok(r);
+    return r.data.map(x => ({ id: x.id, toId: x.to_id, fromId: x.from_id, text: x.text, createdAt: new Date(x.created_at).getTime() }));
+  },
+  async addScrap(s){ return this._try(async () => { ok(await sb.from('scraps').insert({ to_id: s.toId, from_id: s.fromId, text: s.text })); return true }) },
+  async deleteScrap(id){ return this._try(async () => ok(await sb.from('scraps').delete().eq('id', id))) },
 
-  async photos(userId){ return this._get('photos', []).filter(p => !userId || p.userId === userId).sort((a,b) => b.createdAt - a.createdAt) },
-  async addPhoto(p){ const all = this._get('photos', []); all.push(p); return this._set('photos', all) },
-  async deletePhoto(id){ this._set('photos', this._get('photos', []).filter(p => p.id !== id)) },
-
-  session(){ return this._get('session', null) },
-  setSession(id){ id ? this._set('session', id) : localStorage.removeItem('cantinho:session') },
+  // fotos da câmera
+  async photos(userId){
+    let q = sb.from('photos').select('*').order('created_at', { ascending: false });
+    if(userId) q = q.eq('user_id', userId);
+    const r = await q; ok(r);
+    return r.data.map(x => ({ id: x.id, userId: x.user_id, path: x.path, dataUrl: publicUrl(x.path), createdAt: new Date(x.created_at).getTime() }));
+  },
+  async addPhoto(p){
+    return this._try(async () => {
+      const path = await uploadDataUrl(p.dataUrl, `${p.userId}/${Date.now()}.jpg`);
+      ok(await sb.from('photos').insert({ user_id: p.userId, path }));
+      return true;
+    });
+  },
+  async deletePhoto(id){
+    return this._try(async () => {
+      const r = await sb.from('photos').select('path').eq('id', id).single(); ok(r);
+      await sb.storage.from(BUCKET).remove([r.data.path]);
+      ok(await sb.from('photos').delete().eq('id', id));
+    });
+  },
 };
 
 /* ---------- utilidades ---------- */
@@ -214,7 +282,7 @@ function chrome(){
   $('#who').innerHTML = me
     ? `oi, <a href="#/u/${esc(me.username)}">${esc(me.name)}</a> <a class="btn sm alt" href="#/" id="logout">sair</a>`
     : `<a class="btn sm alt" href="#/entrar">entrar</a><a class="btn sm" href="#/criar">criar perfil</a>`;
-  const out = $('#logout'); if(out) out.onclick = () => { db.setSession(null); me = null; route() };
+  const out = $('#logout'); if(out) out.onclick = async e => { e.preventDefault(); await db.signOut(); me = null; if(location.hash !== '#/') location.hash = '#/'; else route() };
   const links = [['#/', 'início'], ['#/blog', 'blog'], ['#/perfis', 'perfis'], ['#/camera', 'câmera']];
   if(me) links.push([`#/u/${me.username}`, 'meu perfil']);
   const cur = location.hash || '#/';
@@ -328,8 +396,7 @@ async function profile(username){
   bindGallery(photos, mine);
   const fr = $('#fr'); if(fr) fr.onclick = async () => {
     if(!me){ location.hash = '#/entrar'; return }
-    const set = new Set(me.friends || []); set.has(u.id) ? set.delete(u.id) : set.add(u.id);
-    me.friends = [...set]; await db.saveUser(me); route();
+    await db.toggleFriend(me, u.id); route();
   };
   const gs = $('#goScrap'); if(gs) gs.onclick = () => { $('#recados').scrollIntoView({ behavior: 'smooth' }); $('#st')?.focus() };
   const sf = $('#sf'); if(sf) sf.onsubmit = async e => {
@@ -377,35 +444,52 @@ async function readProfileForm(base){
 async function signup(){
   app.innerHTML = win('criar perfil', `
     <form id="f" style="max-width:520px">
-      <label for="username" style="margin-top:0">usuário</label><input id="username" type="text" maxlength="20" pattern="[a-z0-9_]{3,20}" required autocomplete="username">
+      <label for="email" style="margin-top:0">e-mail</label><input id="email" type="email" required autocomplete="email">
+      <p class="hint">só pra entrar. ninguém vê.</p>
+      <label for="username">usuário</label><input id="username" type="text" maxlength="20" pattern="[a-z0-9_]{3,20}" required autocomplete="username">
       <p class="hint">3 a 20 letras minúsculas, números ou _ (vira o endereço do seu perfil)</p>
-      <label for="pass">senha</label><input id="pass" type="password" minlength="4" required autocomplete="new-password">
+      <label for="pass">senha</label><input id="pass" type="password" minlength="6" required autocomplete="new-password">
+      <p class="hint">mínimo de 6 caracteres</p>
       ${profileFields()}
       <div id="msg"></div>
       <div class="row" style="margin-top:14px"><button class="btn">criar meu perfil</button><a class="btn alt" href="#/entrar">já tenho perfil</a></div>
     </form>`);
   $('#f').onsubmit = async e => {
     e.preventDefault();
-    const username = $('#username').value.trim().toLowerCase();
-    if(await db.userByName(username)){ $('#msg').innerHTML = '<div class="err" role="alert">esse usuário já existe. tente outro.</div>'; return }
-    const u = await readProfileForm({ id: db.uid(), username, pass: await sha($('#pass').value), createdAt: Date.now(), friends: [] });
-    if(await db.saveUser(u)){ db.setSession(u.id); me = u; toast('perfil criado!'); location.hash = '#/u/' + username }
+    const btn = $('#f button.btn'); btn.disabled = true;
+    const fail = t => { $('#msg').innerHTML = `<div class="err" role="alert">${esc(t)}</div>`; btn.disabled = false };
+    try{
+      const username = $('#username').value.trim().toLowerCase();
+      if(await db.userByName(username)) return fail('esse usuário já existe. tente outro.');
+      const data = await db.signUp({ email: $('#email').value.trim(), password: $('#pass').value, username, name: $('#name').value.trim() });
+      if(data.session){
+        me = await db.currentUser();
+        await db.saveUser(await readProfileForm(me));
+        toast('perfil criado!'); location.hash = '#/u/' + username;
+      }else{
+        app.innerHTML = win('quase lá!', empty('✉', 'mandamos um e-mail pra você confirmar o cadastro. depois de confirmar, entre e edite o perfil pra colocar foto e o resto.', '<a class="btn" href="#/entrar">entrar</a>'));
+      }
+    }catch(err){ fail(err.message || 'não deu pra criar o perfil.') }
   };
 }
 
 async function login(){
   app.innerHTML = win('entrar', `
     <form id="f" style="max-width:380px">
-      <label for="username" style="margin-top:0">usuário</label><input id="username" type="text" required autocomplete="username">
+      <label for="email" style="margin-top:0">e-mail</label><input id="email" type="email" required autocomplete="email">
       <label for="pass">senha</label><input id="pass" type="password" required autocomplete="current-password">
       <div id="msg"></div>
       <div class="row" style="margin-top:14px"><button class="btn">entrar</button><a class="btn alt" href="#/criar">criar perfil</a></div>
     </form>`);
   $('#f').onsubmit = async e => {
     e.preventDefault();
-    const u = await db.userByName($('#username').value.trim().toLowerCase());
-    if(!u || u.pass !== await sha($('#pass').value)){ $('#msg').innerHTML = '<div class="err" role="alert">usuário ou senha incorretos.</div>'; return }
-    db.setSession(u.id); me = u; location.hash = '#/u/' + u.username;
+    try{
+      await db.signIn($('#email').value.trim(), $('#pass').value);
+      me = await db.currentUser(); location.hash = '#/u/' + me.username;
+    }catch(err){
+      const t = /confirm/i.test(err.message) ? 'confirme seu e-mail antes de entrar (veja a caixa de entrada e o spam).' : 'e-mail ou senha incorretos.';
+      $('#msg').innerHTML = `<div class="err" role="alert">${t}</div>`;
+    }
   };
 }
 
@@ -415,8 +499,7 @@ async function edit(){
     <div class="row" style="margin-top:14px"><button class="btn">salvar</button><a class="btn alt" href="#/u/${esc(me.username)}">cancelar</a></div></form>`);
   $('#f').onsubmit = async e => {
     e.preventDefault();
-    const u = await readProfileForm(me);
-    if(await db.saveUser(u)){ me = u; toast('salvo!'); location.hash = '#/u/' + u.username }
+    if(await db.saveUser(await readProfileForm(me))){ toast('salvo!'); location.hash = '#/u/' + me.username }
   };
 }
 
@@ -513,11 +596,22 @@ const routes = [
 ];
 async function route(){
   stopCam();
+  if(!sb){
+    me = null; chrome();
+    app.innerHTML = win('falta configurar ✿', `<p>cole a <b>URL</b> e a <b>anon key</b> do Supabase nas constantes <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code> no começo do script do <code>index.html</code>.</p>`);
+    return;
+  }
   const h = location.hash || '#/';
-  me = db.session() ? await db.userById(db.session()) : null;
-  const hit = routes.map(([re, fn]) => [h.match(re), fn]).find(([m]) => m);
-  if(hit){ await hit[1](...hit[0].slice(1).map(decodeURIComponent)) }
-  else app.innerHTML = win('ops', empty('?', 'página não encontrada.', '<a class="btn" href="#/">voltar pro início</a>'));
+  app.innerHTML = '<p style="color:#fff;text-align:center;font-weight:bold">carregando…</p>';
+  try{
+    me = await db.currentUser();
+    const hit = routes.map(([re, fn]) => [h.match(re), fn]).find(([m]) => m);
+    if(hit){ await hit[1](...hit[0].slice(1).map(decodeURIComponent)) }
+    else app.innerHTML = win('ops', empty('?', 'página não encontrada.', '<a class="btn" href="#/">voltar pro início</a>'));
+  }catch(err){
+    console.error(err);
+    app.innerHTML = win('ops', empty('😵', `não consegui falar com o banco: ${esc(err.message || err)}<br><span class="hint">se o projeto do Supabase estiver pausado, reative no painel dele.</span>`));
+  }
   chrome(); window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', route);
